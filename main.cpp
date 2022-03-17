@@ -3,92 +3,8 @@
 ** Prof. Filipo Mór - filipomor.com
 ** 24 de março de 2021
 */
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <cstring>
+#include "functions.hpp"
 #include <iomanip>
-
-using namespace std;
-
-void SalvaMatriz(int Altura, int Largura, int* M, string Titulo , string NomeArquivo)
-{
-	int L, C; //Linha e Coluna
-
-    NomeArquivo = "./files/" + NomeArquivo;
-
-    ofstream FILE;
-    FILE.open (NomeArquivo);
-
-	if(!FILE.is_open())
-	{
-		cout << "\n::: Erro abrindo arquivo " << NomeArquivo << endl;
-		exit(EXIT_FAILURE);
-	}
-
-    FILE << " " << Titulo << " " << endl;
-    for(L = 0; L < Altura; L++)
-    {
-        for(C = 0; C < Largura; C++)
-        {
-            FILE.width(3);            
-            FILE << left << M[L * Altura + C];
-
-        }
-        FILE << endl;
-    }	
-    
-    FILE.close();
-	
-}
-
-
-
-void MostraMatriz(int Altura, int Largura, int* M, string Titulo)
-{
-    int L, C; //Linha e Coluna
-
-    cout << Titulo << endl;
-    for(L = 0; L < Altura; L++)
-    {
-        for(C = 0; C < Largura; C++)
-        {
-            cout.width(3);
-            cout << left << M[L * Altura + C];
-        }
-        cout << endl;
-    }
-}
-void PreencheMatriz(int Altura, int Largura, int* M)
-{
-
-    int L, C, r; //Linha e Coluna 
-    
-    cout << "Random number: " << r << endl;
-
-    for(L = 0; L < Altura; L++)
-    {
-        for(C = 0; C < Largura; C++)
-        {
-            r = (rand() % 10) + 1; 
-            M[L * Altura + C] = L * C + r;
-        }
-    }
-
-}
-void PreencheMatrizResultado(int Altura, int Largura, int* M, int Valor)
-{
-    int L, C; //Linha e Coluna
-
-    for(L = 0; L < Altura; L++)
-    {
-        for(C = 0; C < Largura; C++)
-        {
-            M[L * Altura + C] = 0;
-        }
-    }
-
-}
 
 int main(int argc, char *argv[])
 {
@@ -100,14 +16,14 @@ int main(int argc, char *argv[])
     int N = atoi(argv[1]);
 
     srand(time(NULL));
-    
+
     int* Ma = (int*)malloc(sizeof(int) * N * N);
     if ( Ma == NULL )
     {
         cout << "\nErro alocando memoria! \n" << endl;
         exit( EXIT_FAILURE );
     }
-
+    
     int* Mb = (int*)malloc(sizeof(int) * N * N);
     if ( Mb == NULL )
     {
@@ -121,14 +37,19 @@ int main(int argc, char *argv[])
         cout << "\nErro alocando memoria! \n" << endl;
         exit( EXIT_FAILURE );
     }
+    //int vectorSize = *(&Ma + 1) - Ma;
 
 	cout << "::: Matrix Multiplication \n" << endl;
 	cout << "::: Width: " << N << " | Height: " << N <<" | Total Size: " << N*N  << endl;
 	cout << "::: Preenchendo as matrizes... " << endl;
 
     PreencheMatriz(N, N, Ma);
+
+    int vectorSize = sizeof(*Ma) / sizeof(int);
+    cout << vectorSize << endl;
+
     PreencheMatriz(N, N, Mb);
-    PreencheMatriz(N, N, Mc);
+    PreencheMatrizResultado(N, N, Mc);
 
 	cout << "Done! Now calculating...\n" << endl;
     MostraMatriz(N, N, Ma, " Matriz A ");
@@ -137,8 +58,8 @@ int main(int argc, char *argv[])
     int L, C, K;
 
     // conta o tempo de processamento
-    clock_t tempo;
-    tempo = clock();
+    clock_t start, end;
+    start = clock();
 
     //C = A . B
     for(L=0; L<N; L++)
@@ -152,19 +73,19 @@ int main(int argc, char *argv[])
         }
     }
 
-	clock_t final = clock();
-	double tempoProcessamento = ((double)(final-tempo)) / (double)(CLOCKS_PER_SEC);
+	end = clock();
+	double tempoProcessamento = ((double)(end-start)) / (double)(CLOCKS_PER_SEC);
 	
-	cout << "Calculation is done! Now saving data on the disc...\n" << endl;
+	cout << "\nCalculation is done! Now saving data on the disc...\n" << endl;
     MostraMatriz(N, N, Mc, " Matriz C ");
     cout << "Saving Matriz A on disc...\n" << endl;
-	//SalvaMatriz(N, N, Ma, "::: Matriz A :::", "matrizA.txt");
+	SalvaMatriz(N, N, Ma, "::: Matriz A :::", "matrizA.txt");
     cout << "Saving Matriz B on disc...\n" << endl;
 	//SalvaMatriz(N, N, Mb, "::: Matriz B :::", "matrizB.txt");
     cout << "Saving Matriz C on disc...\n" << endl;
-	SalvaMatriz(N, N, Mc, "::: Matriz C :::", "./files/matrizC.txt");
-    
-    cout << "\nAll done! Tempo de processamento: " << tempoProcessamento << "segundos." << endl;
+	//SalvaMatriz(N, N, Mc, "::: Matriz C :::", "matrizC.txt");
+
+    cout << "\nAll done! Tempo de processamento: " << fixed << tempoProcessamento << "segundos." << endl;
     return 0;
 }
 
