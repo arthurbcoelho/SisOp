@@ -90,7 +90,7 @@ void PreencheMatrizResultado(int Altura, int Largura, int* M, int Valor)
 
 }
 
-int main_teste(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     if(argc < 1){
         cout << "Not enough arguments" << endl;
@@ -168,20 +168,4 @@ int main_teste(int argc, char *argv[])
     return 0;
 }
 
-int main(){
-    int N = 5;
-    
-    int* Ma = (int*)malloc(sizeof(int) * N * N);
-    if ( Ma == NULL )
-    {
-        cout << "\nErro alocando memoria! " << endl;
-        exit( EXIT_FAILURE );
-    }
-
-    PreencheMatriz(N, N, Ma);
-    MostraMatriz(N, N, Ma, "Teste");
-    SalvaMatriz(N, N, Ma, "::: Matriz A :::", "matrizA.txt");
-
-    return 0;
-}
 
